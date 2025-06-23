@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Management System Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="st.css">
+</head>
+<body>
+    <header>
+        <h1>Process Management System Learning Site</h1>
+    </header>
+
+    <main>
+        <section id="process-input-section" class="card">
+            <h2>Enter Process Details</h2>
+            <div id="process-entries-container">
+                </div>
+            <button id="add-process-btn" class="action-btn">Add Process</button>
+            <div class="simulation-options">
+                <label for="simulate-deadlock-checkbox">
+                    <input type="checkbox" id="simulate-deadlock-checkbox">
+                    Simulate Predefined Deadlock Scenario?
+                </label>
+            </div>
+            <button id="run-simulation-btn" class="action-btn primary-btn">Run Simulation & Compare</button>
+        </section>
+
+        <section id="results-section" class="card" style="display:none;">
+            <h2>Simulation Results</h2>
+            
+            <div id="loading-spinner" style="display:none; text-align:center; margin: 20px;">
+                <div class="spinner"></div>
+                <p>Simulating...</p>
+            </div>
+
+            <div id="actual-results-content">
+                <h3>Comparative Performance Metrics</h3>
+                <div class="table-container">
+                    <table id="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Algorithm</th>
+                                <th>Avg. Waiting Time</th>
+                                <th>Avg. Turnaround Time</th>
+                                <th>Avg. Response Time</th>
+                                <th>CPU Utilization (%)</th>
+                                <th>Throughput (P/unit time)</th>
+                                <th>Total Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            </tbody>
+                    </table>
+                </div>
+
+                <h3>Graphical Comparison</h3>
+                <div class="chart-container">
+                    <canvas id="waitingTimeChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="turnaroundTimeChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="responseTimeChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="cpuUtilizationChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="throughputChart"></canvas>
+                </div>
+                
+                <h3>Best Algorithm Analysis</h3>
+                <div id="best-algo-analysis" class="analysis-box">
+                    </div>
+                
+                <div id="deadlock-results-section" style="display:none;">
+                    <h3>Deadlock Analysis</h3>
+                    <div id="deadlock-info" class="analysis-box">
+                        </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="learning-content" class="card">
+            <h2>Learn More About Process Management</h2>
+            <div class="learning-grid">
+                <article class="learning-article">
+                    <h3>Process Management System</h3>
+                    <p>A Process Management System is a component of an operating system (OS) that handles the creation, scheduling, execution, and termination of processes. A process is an instance of a program in execution, and managing it is essential to efficiently utilize CPU and system resources.</p>
+                    <p><strong>The importance of process management system</strong><br>When managing any organization, it is imperative to understand why process management is essential. More than creating seamless workflows, it enables all business operations to run optimally.<br>
+                    With business processes systematically implemented, you reduce time wasted on repetitive tasks and minimize errors due to human inefficiency. Process management also prevents data loss and missed steps within a process. Moreover, it optimizes resource allocation, ensuring your business uses resources efficiently and reduces costs.<br>
+                    Process management improves business operations by aligning processes with customers' needs, increasing customer satisfaction and leading to higher revenues.</p>
+                </article>
+
+                <article class="learning-article">
+                    <h3>Process Creation and Termination</h3>
+                    <p>Every program running in a system is a process. When a process is created, the operating system performs several steps: assigns a unique Process ID (PID), allocates memory, creates the Process Control Block (PCB), sets up execution context, and places the process in the ready queue.</p>
+                    <p>Processes may be created by system initialization, user requests, batch job submissions, or a parent process using system calls like <code>fork()</code> or <code>createProcess()</code>.</p>
+                    <p><strong>Termination:</strong> A process may terminate voluntarily (normal exit), or involuntarily due to errors, resource unavailability, or by a kill command. The OS reclaims all resources, removes the PCB, and updates scheduling queues.</p>
+                </article>
+
+                <article class="learning-article">
+                    <h3>CPU Scheduling</h3>
+                    <p>CPU scheduling is the mechanism by which the OS decides which process in the ready queue gets to use the CPU next. It is essential in multitasking and multiprogramming systems where many processes compete for the CPU.</p>
+                    <p><strong>Objectives:</strong> Maximize CPU utilization, minimize response time, ensure fairness, and avoid starvation.</p>
+                    <p>Common algorithms include First-Come-First-Served (FCFS), Shortest Job First (SJF), Priority Scheduling, and Round Robin (RR). Scheduling can be <strong>preemptive</strong> (CPU can be taken away) or <strong>non-preemptive</strong> (process runs to completion).</p>
+                </article>
+                
+                <article class="learning-article">
+                    <h3>Inter-Process Communication (IPC)</h3>
+                    <p>IPC enables processes to communicate and coordinate with each other, especially in concurrent systems. It is necessary when processes depend on each other or need to share data.</p>
+                    <p><strong>IPC Methods:</strong></p>
+                    <ul>
+                        <li><strong>Shared Memory:</strong> Two or more processes access the same memory space. Fast but needs synchronization (e.g., semaphores).</li>
+                        <li><strong>Message Passing:</strong> Processes send and receive messages using system calls like <code>send()</code> and <code>receive()</code>. Easier to implement but can be slower than shared memory.</li>
+                    </ul>
+                    <p>IPC is used in client-server models, producer-consumer problems, and multi-threaded applications.</p>
+                </article>
+
+                <article class="learning-article">
+                    <h3>Process Synchronization</h3>
+                    <p>In concurrent systems, multiple processes or threads may access shared resources like memory or files. Synchronization ensures that they do not corrupt the data or enter inconsistent states.</p>
+                    <p><strong>Example:</strong> In a banking system, two transactions updating the same account balance must not execute simultaneously.</p>
+                    <p><strong>Techniques:</strong></p>
+                    <ul>
+                        <li><strong>Mutex Locks:</strong> Allow only one process to enter the critical section at a time.</li>
+                        <li><strong>Semaphores:</strong> Counting or binary semaphores manage access to shared resources.</li>
+                        <li><strong>Monitors:</strong> High-level abstraction that combines mutual exclusion and condition variables.</li>
+                    </ul>
+                    <p><strong>Goal:</strong> Prevent race conditions, maintain data consistency, and ensure orderly execution of processes.</p>
+                </article>
+
+
+
+                <article class="learning-article">
+                    <h3>First-Come, First-Served (FCFS)</h3>
+                    <p>FCFS is the simplest scheduling algorithm. Processes are dispatched according to their arrival time. The process that arrives first gets the CPU first.</p>
+                    <p><strong>Pros:</strong> Simple to understand and implement, fair in the sense that every process eventually runs.</p>
+                    <p><strong>Cons:</strong> Can lead to the "convoy effect," where short processes get stuck waiting for long ones if a long process arrives first. Not ideal for interactive systems as average waiting time can be high.</p>
+                </article>
+                <article class="learning-article">
+                    <h3>Shortest Job First (SJF)</h3>
+                    <p>SJF selects the process with the smallest CPU burst time next. It can be preemptive (Shortest Remaining Time First - SRTF) or non-preemptive.</p>
+                    <p><strong>Pros:</strong> Provably optimal in minimizing average waiting time for a given set of processes (for non-preemptive).</p>
+                    <p><strong>Cons:</strong> Requires knowing the burst time in advance (often not possible). Can lead to starvation for long processes if short processes keep arriving.</p>
+                </article>
+                <article class="learning-article">
+                    <h3>Priority Scheduling</h3>
+                    <p>Each process is assigned a priority, and the CPU is allocated to the process with the highest priority. Can be preemptive or non-preemptive.</p>
+                    <p><strong>Pros:</strong> Allows for important processes to be run sooner.</p>
+                    <p><strong>Cons:</strong> Can lead to starvation for low-priority processes. Aging can be used to mitigate this by gradually increasing the priority of waiting processes.</p>
+                </article>
+                <article class="learning-article">
+                    <h3>Round Robin (RR)</h3>
+                    <p>Designed for time-sharing systems. Each process gets a small unit of CPU time (time quantum or time slice). After this time has elapsed, the process is preempted and added to the end of the ready queue.</p>
+                    <p><strong>Pros:</strong> Fair, provides good response time for interactive users. No starvation.</p>
+                    <p><strong>Cons:</strong> Performance depends heavily on the time quantum. Too small leads to high context switching overhead; too large behaves like FCFS.</p>
+                </article>
+                <article class="learning-article">
+                    <h3>Deadlocks</h3>
+                    <p>A deadlock is a state in which each member of a group of processes is waiting for some other member to release a resource, and none can proceed.</p>
+                    <h4>Necessary Conditions for Deadlock:</h4>
+                    <ul>
+                        <li><strong>Mutual Exclusion:</strong> At least one resource must be held in a non-sharable mode.</li>
+                        <li><strong>Hold and Wait:</strong> A process must be holding at least one resource and waiting to acquire additional resources that are currently being held by other processes.</li>
+                        <li><strong>No Preemption:</strong> Resources cannot be preempted; a resource can only be released voluntarily by the process holding it.</li>
+                        <li><strong>Circular Wait:</strong> A set of waiting processes {P0, P1, ..., Pn} must exist such that P0 is waiting for a resource held by P1, P1 is waiting for a resource held by P2, ..., Pn-1 is waiting for Pn, and Pn is waiting for a resource held by P0.</li>
+                    </ul>
+                    <p><strong>Techniques:</strong></p>
+                    <ul>
+                        <li><strong>Prevention:</strong> Design the system to ensure at least one of the deadlock conditions cannot hold.</li>
+                        <li><strong>Avoidance:</strong> Use algorithms like <em>Banker’s Algorithm</em> to ensure a safe resource allocation state.</li>
+                        <li><strong>Detection and Recovery:</strong> Allow deadlocks to occur, detect them using resource allocation graphs, and recover by terminating or rolling back processes.</li>
+                        <li><strong>Ignore:</strong> In some systems, deadlocks are rare and handled by rebooting (Ostrich Algorithm).</li>
+                    </ul>
+                    <p>Deadlocks can be prevented, avoided, detected and recovered from, or ignored (the "Ostrich Algorithm").</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2023 Process Management Learning Site</p>
+    </footer>
+
+    <script src="sc.js">
+        // function createBarChart(canvasId, title, labels, data, backgroundColor, borderColor) {
+        //     const ctx = document.getElementById(canvasId).getContext('2d');
+        //     // Destroy existing chart instance on the canvas if it exists
+        //     const existingChart = Chart.getChart(ctx);
+        //     if (existingChart) {
+        //         existingChart.destroy();
+        //     }
+
+        //     new Chart(ctx, {
+        //         type: 'bar',
+        //         data: {
+        //             labels: labels,
+        //             datasets: [{
+        //                 label: title,
+        //                 data: data,
+        //                 backgroundColor: backgroundColor,
+        //                 borderColor: borderColor,
+        //                 borderWidth: 1
+        //             }]
+        //         },
+        //         options: {
+        //             responsive: true,
+        //             scales: {
+        //                 y: {
+        //                     beginAtZero: true
+        //                 }
+        //             },
+        //             plugins: {
+        //                 title: {
+        //                     display: true,
+        //                     text: title
+        //                 }
+        //             }
+        //         }
+        //     });
+        // }
+
+        // // Example `displayResults` function with chart generation
+        // // You will need to adapt this to your actual simulation output structure.
+        // function displayResults(simulationResults) {
+        //     const comparisonTableBody = document.querySelector('#comparison-table tbody');
+        //     comparisonTableBody.innerHTML = ''; // Clear previous results
+
+        //     const algorithms = Object.keys(simulationResults); // e.g., ['FCFS', 'SJF', 'Priority', 'RR']
+
+        //     const avgWaitingTimes = [];
+        //     const avgTurnaroundTimes = [];
+        //     const avgResponseTimes = [];
+        //     const cpuUtilizations = [];
+        //     const throughputs = [];
+
+        //     algorithms.forEach(algo => {
+        //         const result = simulationResults[algo];
+        //         const row = comparisonTableBody.insertRow();
+        //         row.insertCell().textContent = algo;
+        //         row.insertCell().textContent = result.avgWaitingTime.toFixed(2);
+        //         row.insertCell().textContent = result.avgTurnaroundTime.toFixed(2);
+        //         row.insertCell().textContent = result.avgResponseTime.toFixed(2);
+        //         row.insertCell().textContent = result.cpuUtilization.toFixed(2);
+        //         row.insertCell().textContent = result.throughput.toFixed(2);
+        //         row.insertCell().textContent = result.totalTime.toFixed(2);
+
+        //         // Collect data for charts
+        //         avgWaitingTimes.push(result.avgWaitingTime);
+        //         avgTurnaroundTimes.push(result.avgTurnaroundTime);
+        //         avgResponseTimes.push(result.avgResponseTime);
+        //         cpuUtilizations.push(result.cpuUtilization);
+        //         throughputs.push(result.throughput);
+        //     });
+
+        //     // Generate Charts
+        //     createBarChart(
+        //         'waitingTimeChart',
+        //         'Average Waiting Time',
+        //         algorithms,
+        //         avgWaitingTimes,
+        //         'rgba(255, 99, 132, 0.6)',
+        //         'rgba(255, 99, 132, 1)'
+        //     );
+
+        //     createBarChart(
+        //         'turnaroundTimeChart',
+        //         'Average Turnaround Time',
+        //         algorithms,
+        //         avgTurnaroundTimes,
+        //         'rgba(54, 162, 235, 0.6)',
+        //         'rgba(54, 162, 235, 1)'
+        //     );
+
+        //     createBarChart(
+        //         'responseTimeChart',
+        //         'Average Response Time',
+        //         algorithms,
+        //         avgResponseTimes,
+        //         'rgba(255, 206, 86, 0.6)',
+        //         'rgba(255, 206, 86, 1)'
+        //     );
+
+        //     createBarChart(
+        //         'cpuUtilizationChart',
+        //         'CPU Utilization (%)',
+        //         algorithms,
+        //         cpuUtilizations,
+        //         'rgba(75, 192, 192, 0.6)',
+        //         'rgba(75, 192, 192, 1)'
+        //     );
+
+        //     createBarChart(
+        //         'throughputChart',
+        //         'Throughput (P/unit time)',
+        //         algorithms,
+        //         throughputs,
+        //         'rgba(153, 102, 255, 0.6)',
+        //         'rgba(153, 102, 255, 1)'
+        //     );
+
+        //     document.getElementById('results-section').style.display = 'block';
+        //     document.getElementById('loading-spinner').style.display = 'none';
+
+        //     // ... (your existing best algorithm analysis and deadlock display logic) ...
+        // }
+
+
+        // // Initial process entry
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     // Add an initial process row when the page loads
+        //     addProcessEntry();
+        // });
+
+        // function addProcessEntry() {
+        //     const container = document.getElementById('process-entries-container');
+        //     const newEntry = document.createElement('div');
+        //     newEntry.classList.add('process-entry');
+        //     newEntry.innerHTML = `
+        //         <label>Process ID: <input type="text" class="process-id" value="P${container.children.length + 1}"></label>
+        //         <label>Arrival Time: <input type="number" class="arrival-time" value="0" min="0"></label>
+        //         <label>Burst Time: <input type="number" class="burst-time" value="5" min="1"></label>
+        //         <label>Priority: <input type="number" class="priority" value="1" min="1"></label>
+        //         <button class="remove-process-btn">Remove</button>
+        //     `;
+        //     container.appendChild(newEntry);
+
+        //     newEntry.querySelector('.remove-process-btn').addEventListener('click', () => {
+        //         newEntry.remove();
+        //     });
+        // }
+
+        // document.getElementById('add-process-btn').addEventListener('click', addProcessEntry);
+
+        // // This function would collect process data for simulation
+        // function getProcessData() {
+        //     const processEntries = document.querySelectorAll('.process-entry');
+        //     const processes = [];
+        //     processEntries.forEach(entry => {
+        //         processes.push({
+        //             id: entry.querySelector('.process-id').value,
+        //             arrivalTime: parseInt(entry.querySelector('.arrival-time').value),
+        //             burstTime: parseInt(entry.querySelector('.burst-time').value),
+        //             priority: parseInt(entry.querySelector('.priority').value)
+        //         });
+        //     });
+        //     return processes;
+        // }
+
+        // // You'll need to implement your actual scheduling algorithms here:
+        // // FCFS, SJF, Priority, Round Robin
+        // // And they should return an object like the `simulatedResults` example above.
+
+        // // Example placeholder for simulation function
+        // // This is where you would integrate your actual scheduling algorithms.
+        // function runAllSimulations(processes, simulateDeadlock) {
+        //     // --- Implement FCFS Scheduling ---
+        //     function runFCFS(procs) {
+        //         let sortedProcs = [...procs].sort((a, b) => a.arrivalTime - b.arrivalTime);
+        //         let currentTime = 0;
+        //         let totalWaitingTime = 0;
+        //         let totalTurnaroundTime = 0;
+        //         let totalResponseTime = 0;
+        //         let cpuIdleTime = 0;
+        //         let completedProcesses = 0;
+        //         let lastCompletionTime = 0;
+        //         const processCompletionTimes = {};
+        //         const processResponseTimes = {};
+        //         const processStartTimes = {};
+
+        //         sortedProcs.forEach(p => {
+        //             if (currentTime < p.arrivalTime) {
+        //                 cpuIdleTime += (p.arrivalTime - currentTime);
+        //                 currentTime = p.arrivalTime; // CPU waits for process arrival
+        //             }
+
+        //             processStartTimes[p.id] = currentTime;
+        //             totalResponseTime += (currentTime - p.arrivalTime);
+
+        //             totalWaitingTime += (currentTime - p.arrivalTime);
+        //             currentTime += p.burstTime;
+        //             totalTurnaroundTime += (currentTime - p.arrivalTime);
+        //             processCompletionTimes[p.id] = currentTime;
+        //             lastCompletionTime = Math.max(lastCompletionTime, currentTime);
+        //             completedProcesses++;
+        //         });
+
+        //         const totalSimulationTime = lastCompletionTime;
+        //         const cpuBusyTime = totalSimulationTime - cpuIdleTime;
+        //         const cpuUtilization = (cpuBusyTime / totalSimulationTime) * 100;
+        //         const throughput = completedProcesses / totalSimulationTime;
+
+        //         return {
+        //             avgWaitingTime: totalWaitingTime / procs.length,
+        //             avgTurnaroundTime: totalTurnaroundTime / procs.length,
+        //             avgResponseTime: totalResponseTime / procs.length,
+        //             cpuUtilization: isNaN(cpuUtilization) ? 0 : cpuUtilization, // Handle division by zero
+        //             throughput: isNaN(throughput) ? 0 : throughput,
+        //             totalTime: totalSimulationTime
+        //         };
+        //     }
+
+        //     // --- Implement SJF Scheduling (Non-preemptive) ---
+        //     function runSJF(procs) {
+        //         let processesCopy = [...procs];
+        //         let currentTime = 0;
+        //         let totalWaitingTime = 0;
+        //         let totalTurnaroundTime = 0;
+        //         let totalResponseTime = 0;
+        //         let cpuIdleTime = 0;
+        //         let completedProcesses = 0;
+        //         let lastCompletionTime = 0;
+        //         const processStartTimes = {};
+
+        //         // To keep track of processes that have arrived but not yet run
+        //         let readyQueue = [];
+
+        //         while (completedProcesses < processesCopy.length) {
+        //             // Add processes that have arrived to the ready queue
+        //             processesCopy.forEach(p => {
+        //                 if (p.arrivalTime <= currentTime && !readyQueue.includes(p) && !p.completed) {
+        //                     readyQueue.push(p);
+        //                 }
+        //             });
+
+        //             // Filter out processes that have already completed
+        //             readyQueue = readyQueue.filter(p => !p.completed);
+
+        //             if (readyQueue.length === 0) {
+        //                 // If no process is ready, increment idle time until the next arrival
+        //                 let nextArrivalTime = Infinity;
+        //                 processesCopy.forEach(p => {
+        //                     if (!p.completed && p.arrivalTime > currentTime) {
+        //                         nextArrivalTime = Math.min(nextArrivalTime, p.arrivalTime);
+        //                     }
+        //                 });
+
+        //                 if (nextArrivalTime === Infinity) {
+        //                     // No more processes to run and ready queue is empty, break
+        //                     break;
+        //                 }
+        //                 cpuIdleTime += (nextArrivalTime - currentTime);
+        //                 currentTime = nextArrivalTime;
+        //                 continue; // Re-evaluate ready queue
+        //             }
+
+        //             // Sort ready queue by burst time (SJF)
+        //             readyQueue.sort((a, b) => a.burstTime - b.burstTime);
+
+        //             let currentProcess = readyQueue[0];
+
+        //             if (processStartTimes[currentProcess.id] === undefined) {
+        //                 processStartTimes[currentProcess.id] = currentTime;
+        //                 totalResponseTime += (currentTime - currentProcess.arrivalTime);
+        //             }
+
+        //             totalWaitingTime += (currentTime - currentProcess.arrivalTime);
+        //             currentTime += currentProcess.burstTime;
+        //             totalTurnaroundTime += (currentTime - currentProcess.arrivalTime);
+        //             currentProcess.completed = true; // Mark as completed
+        //             lastCompletionTime = Math.max(lastCompletionTime, currentTime);
+        //             completedProcesses++;
+        //         }
+
+        //         const totalSimulationTime = lastCompletionTime;
+        //         const cpuBusyTime = totalSimulationTime - cpuIdleTime;
+        //         const cpuUtilization = (cpuBusyTime / totalSimulationTime) * 100;
+        //         const throughput = completedProcesses / totalSimulationTime;
+
+
+        //         return {
+        //             avgWaitingTime: totalWaitingTime / procs.length,
+        //             avgTurnaroundTime: totalTurnaroundTime / procs.length,
+        //             avgResponseTime: totalResponseTime / procs.length,
+        //             cpuUtilization: isNaN(cpuUtilization) ? 0 : cpuUtilization,
+        //             throughput: isNaN(throughput) ? 0 : throughput,
+        //             totalTime: totalSimulationTime
+        //         };
+        //     }
+
+        //     // --- Implement Priority Scheduling (Non-preemptive) ---
+        //     function runPriority(procs) {
+        //         let processesCopy = [...procs];
+        //         let currentTime = 0;
+        //         let totalWaitingTime = 0;
+        //         let totalTurnaroundTime = 0;
+        //         let totalResponseTime = 0;
+        //         let cpuIdleTime = 0;
+        //         let completedProcesses = 0;
+        //         let lastCompletionTime = 0;
+        //         const processStartTimes = {};
+
+        //         let readyQueue = [];
+
+        //         while (completedProcesses < processesCopy.length) {
+        //             processesCopy.forEach(p => {
+        //                 if (p.arrivalTime <= currentTime && !readyQueue.includes(p) && !p.completed) {
+        //                     readyQueue.push(p);
+        //                 }
+        //             });
+
+        //             readyQueue = readyQueue.filter(p => !p.completed);
+
+        //             if (readyQueue.length === 0) {
+        //                 let nextArrivalTime = Infinity;
+        //                 processesCopy.forEach(p => {
+        //                     if (!p.completed && p.arrivalTime > currentTime) {
+        //                         nextArrivalTime = Math.min(nextArrivalTime, p.arrivalTime);
+        //                     }
+        //                 });
+
+        //                 if (nextArrivalTime === Infinity) break;
+        //                 cpuIdleTime += (nextArrivalTime - currentTime);
+        //                 currentTime = nextArrivalTime;
+        //                 continue;
+        //             }
+
+        //             // Sort ready queue by priority (lower number = higher priority)
+        //             readyQueue.sort((a, b) => a.priority - b.priority);
+
+        //             let currentProcess = readyQueue[0];
+
+        //             if (processStartTimes[currentProcess.id] === undefined) {
+        //                 processStartTimes[currentProcess.id] = currentTime;
+        //                 totalResponseTime += (currentTime - currentProcess.arrivalTime);
+        //             }
+
+        //             totalWaitingTime += (currentTime - currentProcess.arrivalTime);
+        //             currentTime += currentProcess.burstTime;
+        //             totalTurnaroundTime += (currentTime - currentProcess.arrivalTime);
+        //             currentProcess.completed = true;
+        //             lastCompletionTime = Math.max(lastCompletionTime, currentTime);
+        //             completedProcesses++;
+        //         }
+
+        //         const totalSimulationTime = lastCompletionTime;
+        //         const cpuBusyTime = totalSimulationTime - cpuIdleTime;
+        //         const cpuUtilization = (cpuBusyTime / totalSimulationTime) * 100;
+        //         const throughput = completedProcesses / totalSimulationTime;
+
+        //         return {
+        //             avgWaitingTime: totalWaitingTime / procs.length,
+        //             avgTurnaroundTime: totalTurnaroundTime / procs.length,
+        //             avgResponseTime: totalResponseTime / procs.length,
+        //             cpuUtilization: isNaN(cpuUtilization) ? 0 : cpuUtilization,
+        //             throughput: isNaN(throughput) ? 0 : throughput,
+        //             totalTime: totalSimulationTime
+        //         };
+        //     }
+
+        //     // --- Implement Round Robin Scheduling ---
+        //     function runRR(procs, quantum = 2) { // Default quantum of 2
+        //         let processesCopy = procs.map(p => ({ ...p, remainingBurst: p.burstTime }));
+        //         let currentTime = 0;
+        //         let totalWaitingTime = 0;
+        //         let totalTurnaroundTime = 0;
+        //         let totalResponseTime = 0;
+        //         let cpuIdleTime = 0;
+        //         let completedProcesses = 0;
+        //         let lastCompletionTime = 0;
+        //         const processCompletionTimes = {};
+        //         const processResponseTimes = {};
+        //         const processStartTimes = {};
+                
+        //         let queue = [];
+        //         let arrived = new Set();
+
+        //         // Sort processes by arrival time initially
+        //         processesCopy.sort((a, b) => a.arrivalTime - b.arrivalTime);
+
+        //         // Initialize queue with processes arrived at time 0 or first process
+        //         let initialTime = processesCopy.length > 0 ? processesCopy[0].arrivalTime : 0;
+        //         if (initialTime > 0) {
+        //             cpuIdleTime += initialTime;
+        //             currentTime = initialTime;
+        //         }
+
+        //         while (completedProcesses < processesCopy.length) {
+        //             // Add newly arrived processes to the queue
+        //             processesCopy.forEach(p => {
+        //                 if (p.arrivalTime <= currentTime && !arrived.has(p.id) && p.remainingBurst > 0) {
+        //                     queue.push(p);
+        //                     arrived.add(p.id);
+        //                 }
+        //             });
+                    
+        //             // Sort queue by arrival time for those that arrived at the same time
+        //             queue.sort((a, b) => a.arrivalTime - b.arrivalTime);
+
+        //             if (queue.length === 0) {
+        //                 // CPU is idle, advance time to next arrival
+        //                 let nextArrivalTime = Infinity;
+        //                 processesCopy.forEach(p => {
+        //                     if (!arrived.has(p.id) && p.remainingBurst > 0 && p.arrivalTime > currentTime) {
+        //                         nextArrivalTime = Math.min(nextArrivalTime, p.arrivalTime);
+        //                     }
+        //                 });
+                        
+        //                 if (nextArrivalTime === Infinity) { // No more processes to arrive
+        //                      break;
+        //                 }
+        //                 cpuIdleTime += (nextArrivalTime - currentTime);
+        //                 currentTime = nextArrivalTime;
+        //                 continue; // Loop again to add newly arrived processes
+        //             }
+
+        //             let currentProcess = queue.shift();
+
+        //             if (processStartTimes[currentProcess.id] === undefined) {
+        //                 processStartTimes[currentProcess.id] = currentTime;
+        //                 totalResponseTime += (currentTime - currentProcess.arrivalTime);
+        //             }
+
+        //             let executionTime = Math.min(quantum, currentProcess.remainingBurst);
+        //             currentTime += executionTime;
+        //             currentProcess.remainingBurst -= executionTime;
+
+        //             // Add processes that arrived during this execution slice to queue
+        //             processesCopy.forEach(p => {
+        //                 if (p.arrivalTime > (currentTime - executionTime) && p.arrivalTime <= currentTime && !arrived.has(p.id) && p.remainingBurst > 0) {
+        //                     queue.push(p);
+        //                     arrived.add(p.id);
+        //                 }
+        //             });
+        //             // Re-sort to maintain order if new processes are added mid-slice (for strict RR)
+        //             queue.sort((a,b) => a.arrivalTime - b.arrivalTime); // Re-sort for processes newly arrived or moved to back
+
+        //             if (currentProcess.remainingBurst === 0) {
+        //                 completedProcesses++;
+        //                 totalTurnaroundTime += (currentTime - currentProcess.arrivalTime);
+        //                 totalWaitingTime += (currentTime - currentProcess.burstTime - currentProcess.arrivalTime); // This needs careful calculation for RR
+        //                 lastCompletionTime = Math.max(lastCompletionTime, currentTime);
+        //             } else {
+        //                 queue.push(currentProcess); // Add back to end of queue
+        //             }
+        //         }
+                
+        //         // Recalculate waiting time for RR properly
+        //         let finalTotalWaitingTime = 0;
+        //         let finalTotalTurnaroundTime = 0;
+        //         let finalTotalResponseTime = 0;
+
+        //         processesCopy.forEach(p => {
+        //             // For RR, waiting time is Turnaround Time - Burst Time
+        //             // Turnaround time for RR needs to be tracked from actual completion
+        //             // This is a simplified calculation, a full Gantt chart simulation would be more precise.
+        //             const turnaround = p.completionTime || 0; // Assuming completionTime is set during a full RR sim
+        //             const waiting = turnaround - p.burstTime;
+        //             finalTotalWaitingTime += waiting;
+        //             finalTotalTurnaroundTime += turnaround;
+        //             finalTotalResponseTime += (processStartTimes[p.id] - p.arrivalTime);
+        //         });
+
+        //         // Re-calculating total waiting time and turnaround time is complex in pure RR without detailed event logging.
+        //         // The above will use simple approximations based on final states.
+        //         // For accurate RR metrics, a detailed trace of each process's start/stop times is needed.
+        //         // For this example, we will use the aggregate totals as approximated by the main loop.
+
+        //         const totalSimulationTime = lastCompletionTime;
+        //         const cpuBusyTime = totalSimulationTime - cpuIdleTime;
+        //         const cpuUtilization = (cpuBusyTime / totalSimulationTime) * 100;
+        //         const throughput = completedProcesses / totalSimulationTime;
+
+        //         return {
+        //             avgWaitingTime: totalWaitingTime / procs.length, // This might be less accurate for RR without full trace
+        //             avgTurnaroundTime: totalTurnaroundTime / procs.length, // This might be less accurate for RR without full trace
+        //             avgResponseTime: totalResponseTime / procs.length,
+        //             cpuUtilization: isNaN(cpuUtilization) ? 0 : cpuUtilization,
+        //             throughput: isNaN(throughput) ? 0 : throughput,
+        //             totalTime: totalSimulationTime
+        //         };
+        //     }
+
+
+        //     // --- Main simulation runner ---
+        //     const results = {};
+
+        //     // Ensure original processes array is not mutated by sorting/modifying
+        //     const clonedProcesses = JSON.parse(JSON.stringify(processes));
+
+        //     results['FCFS'] = runFCFS(clonedProcesses);
+        //     results['SJF'] = runSJF(JSON.parse(JSON.stringify(processes))); // Clone again for independent run
+        //     results['Priority'] = runPriority(JSON.parse(JSON.stringify(processes))); // Clone again
+        //     results['RR'] = runRR(JSON.parse(JSON.stringify(processes)), 2); // Default quantum 2, can be user-defined
+
+        //     return results;
+        // }
+
+
+        // document.getElementById('run-simulation-btn').addEventListener('click', () => {
+        //     document.getElementById('loading-spinner').style.display = 'block';
+        //     document.getElementById('results-section').style.display = 'none';
+
+        //     const processes = getProcessData();
+        //     const simulateDeadlock = document.getElementById('simulate-deadlock-checkbox').checked;
+
+        //     // In a real scenario, these simulations would take time
+        //     setTimeout(() => {
+        //         const simulationResults = runAllSimulations(processes, simulateDeadlock);
+        //         displayResults(simulationResults);
+
+        //         // Best algorithm analysis (simplified for this example)
+        //         // Determine best algorithm based on a chosen metric, e.g., minimum average turnaround time
+        //         let bestAlgo = '';
+        //         let minAvgTurnaroundTime = Infinity;
+        //         let maxCpuUtilization = -Infinity;
+        //         let maxThroughput = -Infinity;
+        //         let minAvgWaitingTime = Infinity;
+
+        //         for (const algo in simulationResults) {
+        //             const result = simulationResults[algo];
+
+        //             if (result.avgTurnaroundTime < minAvgTurnaroundTime) {
+        //                 minAvgTurnaroundTime = result.avgTurnaroundTime;
+        //                 bestAlgo = algo;
+        //             }
+        //             if (result.cpuUtilization > maxCpuUtilization) {
+        //                 maxCpuUtilization = result.cpuUtilization;
+        //             }
+        //             if (result.throughput > maxThroughput) {
+        //                 maxThroughput = result.throughput;
+        //             }
+        //              if (result.avgWaitingTime < minAvgWaitingTime) {
+        //                 minAvgWaitingTime = result.avgWaitingTime;
+        //             }
+        //         }
+                
+        //         let analysisText = `<p>Based on the simulations with the given process details:</p>`;
+        //         analysisText += `<ul>`;
+        //         analysisText += `<li><strong>${bestAlgo}</strong> generally showed a good balance in reducing turnaround time.</li>`;
+        //         analysisText += `<li>Algorithms with lower Average Waiting Time (e.g., ${Object.keys(simulationResults).find(a => simulationResults[a].avgWaitingTime === minAvgWaitingTime)}) are good for processes that need quick access to CPU.</li>`;
+        //         analysisText += `<li>Algorithms with higher CPU Utilization (e.g., ${Object.keys(simulationResults).find(a => simulationResults[a].cpuUtilization === maxCpuUtilization)}) are efficient at keeping the CPU busy.</li>`;
+        //         analysisText += `<li>Algorithms with higher Throughput (e.g., ${Object.keys(simulationResults).find(a => simulationResults[a].throughput === maxThroughput)}) are effective at completing more processes per unit of time.</li>`;
+        //         analysisText += `</ul>`;
+        //         analysisText += `<p>The "best" algorithm depends on the specific goals (e.g., minimize waiting time, maximize throughput, ensure fairness). For interactive systems, Round Robin often performs well due to good response times, while for batch systems, SJF might be optimal for throughput.</p>`;
+
+        //         document.getElementById('best-algo-analysis').innerHTML = analysisText;
+
+
+        //         // Deadlock results
+        //         const deadlockSection = document.getElementById('deadlock-results-section');
+        //         const deadlockInfo = document.getElementById('deadlock-info');
+        //         if (simulateDeadlock) {
+        //             deadlockSection.style.display = 'block';
+        //             deadlockInfo.innerHTML = '<p>A predefined deadlock scenario was simulated (this simulation does not implement actual deadlock detection logic, but demonstrates the concept).</p><p>In a real system, a deadlock detection algorithm (like a resource-allocation graph or Banker\'s Algorithm) would identify:</p><ul><li>Which processes are involved in the deadlock.</li><li>Which resources they are holding and requesting.</li><li>Possible strategies for recovery (e.g., process termination, resource preemption).</li></ul>';
+        //         } else {
+        //             deadlockSection.style.display = 'none';
+        //         }
+
+        //     }, 1000); // Simulate network/computation delay
+        // });
+    </script>
+</body>
+</html>
